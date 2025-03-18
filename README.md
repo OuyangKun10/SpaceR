@@ -7,6 +7,6 @@ data sample
 
 prediction example:
 
-predicted_answer: <think>There are three chairs in the room. Two are placed around the dining table, and one is placed near the window.</think><answer>3</answer>
+predicted_answer: <think>There are three chairs in the room. Two are placed around the dining table, and one is placed near the window.</think> <answer>3</answer>
 
 ground truth: 3
