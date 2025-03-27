@@ -10,3 +10,10 @@ prediction example:
 predicted_answer: <think>There are three chairs in the room. Two are placed around the dining table, and one is placed near the window.</think> <answer>3</answer>
 
 ground truth: 3
+
+We curate a dataset tailored for video spatial reasoning and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench.
+
+| Model             | object_rel_distance | route_planning | object_rel_direction | object_rel_distance | object_counting |
+|-------------------|----------------------|-----------------|-----------------------|----------------------|-----------------|
+| Qwen2.5-VL-7B     | 35.77                | 29.38           | 32.69                 | 37.73                | 33.96           |
+| Qwen2.5-VL-7B+GRPO| 36.76                | 32.99           | 34.63                 | 38.15                | 48.32           |
