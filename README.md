@@ -13,7 +13,8 @@ ground truth: 3
 
 We curate a dataset tailored for video spatial reasoning and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench.
 
-| Model             | object_rel_distance | route_planning | object_rel_direction | object_rel_distance | object_counting |
-|-------------------|----------------------|-----------------|-----------------------|----------------------|-----------------|
-| Qwen2.5-VL-7B     | 35.77                | 29.38           | 32.69                 | 37.73                | 33.96           |
-| Qwen2.5-VL-7B+GRPO| 36.76                | 32.99           | 34.63                 | 38.15                | 48.32           |
+| Model                      | obj_appearance_order | object_abs_distance | object_counting | object_rel_distance | object_size_estimation | room_size_estimation | route_planning | object_rel_direction | Overall_acc |
+| :------------------------- | :------------------- | :------------------ | :-------------- | :------------------ | :--------------------- | :------------------- | :------------- | :------------------- | :---------- |
+| Qwen2.5-VL-7B(zero-shot) | 32.69                | 17.48               | 33.96           | 35.77               | 51.85                  | 36.60                | 29.38          | 37.73                | 34.43       |
+| Qwen2.5-VL-7B(CoT)       | 30.42                | 12.10               | 15.84           | 31.83               | 19.12                  | 24.24                | 34.54          | 34.68                | 25.35       |
+| Qwen2.5-VL-7B+GRPO       | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
