@@ -18,3 +18,54 @@ We curate a dataset tailored for video spatial reasoning based on ScanNet and tr
 | Qwen2.5-VL-7B(zero-shot) | 32.69                | 17.48               | 33.96           | 35.77               | 51.85                  | 36.60                | 29.38          | 37.73                | 34.43       |
 | Qwen2.5-VL-7B(CoT)       | 30.42                | 12.10               | 15.84           | 31.83               | 19.12                  | 24.24                | 34.54          | 34.68                | 25.35       |
 | Qwen2.5-VL-7B+GRPO       | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
+
+
+# VSI-Bench MLLM Evaluation Script
+
+Evaluates Multi-modal Large Language Models (like Qwen2.5-VL) on the VSI-Bench video spatial reasoning benchmark using multi-GPU processing.
+
+## Key Features
+
+*   Evaluates on VSI-Bench dataset (`.parquet` + videos).
+*   Multi-GPU parallel processing via `accelerate`.
+*   Configurable video frame sampling (`decord`).
+*   Supports different prompt templates (e.g., default, chain-of-thought).
+*   Optional cognitive map generation or loading from file.
+*   Detailed JSONL output with predictions, prompts, and metadata.
+*   Automatic accuracy calculation (overall and per-task).
+*   Timestamped logging for configuration and results.
+
+
+## Evaluation
+
+## Setup
+
+1.  **Environment:** Python 3.8+, CUDA-enabled GPUs.
+2.  **Install Libraries:**
+    ```bash
+    pip install torch pandas numpy pillow accelerate transformers sentencepiece decord flash-attn --no-build-isolation
+    ```
+3.  **Dataset:** VSI-Bench `.parquet` file and corresponding `.mp4` video files.
+4.  **Utilities:** Ensure `qwen_vl_utils.py`, `util.py`, `vsibench_acc.py` are accessible.
+
+## Usage
+
+1.  **Configure:** Edit parameters in the `if __name__ == "__main__":` block:
+    *   `parquet_file`, `video_dir`, `output_dir_base`
+    *   `model_name` (path or HF ID)
+    *   `gpu_ids`, `num_processes`
+    *   `num_frames`, `fps`, `target_resolution`, `batch_size`
+    *   `SELECTED_PROMPT_TYPE`
+    *   Cognitive map settings (`use_cognitive_map`, `offload_cogmap`, paths, keys)
+    *   `debug_mode`, `debug_size`
+2.  **Run:**
+    ```bash
+    python your_script_name.py
+    ```
+
+## Output
+
+*   **Results:** `output_dir/model_timestamp/vsibench_results_*.jsonl` (Detailed predictions and metadata).
+*   **Logs:** `output_dir/model_timestamp/vsibench_eval_*.log` (Configuration, progress, timings, and final accuracy metrics).
+
+The script automatically calculates and prints/logs overall and per-task accuracy upon completion.
