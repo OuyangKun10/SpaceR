@@ -46,7 +46,7 @@ We curate a dataset tailored for video spatial reasoning based on ScanNet and tr
     *   `debug_mode`, `debug_size`
 2.  **Run:**
     ```bash
-    python your_script_name.py
+    python eval_qwen.py
     ```
 
 ## Output
