@@ -55,3 +55,5 @@ We curate a dataset tailored for video spatial reasoning based on ScanNet and tr
 *   **Logs:** `output_dir/model_timestamp/vsibench_eval_*.log` (Configuration, progress, timings, and final accuracy metrics).
 
 The script automatically calculates and prints/logs overall and per-task accuracy upon completion.
+
+We will release the final version of **SR** dataset after all work is done.
