@@ -1,0 +1,63 @@
+Metadata-Version: 2.2
+Name: open-r1
+Version: 0.1.0.dev0
+Summary: Open R1
+Home-page: https://github.com/huggingface/open-r1
+Author: The Hugging Face team (past and future)
+Author-email: lewis@huggingface.co
+License: Apache
+Keywords: llm inference-time compute reasoning
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.10.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: accelerate>=1.2.1
+Requires-Dist: bitsandbytes>=0.43.0
+Requires-Dist: einops>=0.8.0
+Requires-Dist: datasets>=3.2.0
+Requires-Dist: deepspeed==0.15.4
+Requires-Dist: hf_transfer>=0.1.4
+Requires-Dist: huggingface-hub[cli]<1.0,>=0.19.2
+Requires-Dist: liger_kernel==0.5.2
+Requires-Dist: packaging>=23.0
+Requires-Dist: safetensors>=0.3.3
+Requires-Dist: sentencepiece>=0.1.99
+Requires-Dist: transformers==4.49.0
+Requires-Dist: trl@ git+https://github.com/huggingface/trl.git@main
+Provides-Extra: tests
+Requires-Dist: pytest; extra == "tests"
+Requires-Dist: parameterized>=0.9.0; extra == "tests"
+Provides-Extra: torch
+Requires-Dist: torch>=2.5.1; extra == "torch"
+Provides-Extra: quality
+Requires-Dist: black>=24.4.2; extra == "quality"
+Requires-Dist: isort>=5.12.0; extra == "quality"
+Requires-Dist: flake8>=6.0.0; extra == "quality"
+Provides-Extra: eval
+Requires-Dist: math-verify; extra == "eval"
+Provides-Extra: dev
+Requires-Dist: black>=24.4.2; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: parameterized>=0.9.0; extra == "dev"
+Requires-Dist: math-verify; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
