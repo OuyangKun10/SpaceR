@@ -20,20 +20,6 @@ We curate a dataset tailored for video spatial reasoning based on ScanNet and tr
 | Qwen2.5-VL-7B+GRPO       | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
 
 
-# VSI-Bench MLLM Evaluation Script
-
-Evaluates Multi-modal Large Language Models (like Qwen2.5-VL) on the VSI-Bench video spatial reasoning benchmark using multi-GPU processing.
-
-## Key Features
-
-*   Evaluates on VSI-Bench dataset (`.parquet` + videos).
-*   Multi-GPU parallel processing via `accelerate`.
-*   Configurable video frame sampling (`decord`).
-*   Supports different prompt templates (e.g., default, chain-of-thought).
-*   Optional cognitive map generation or loading from file.
-*   Detailed JSONL output with predictions, prompts, and metadata.
-*   Automatic accuracy calculation (overall and per-task).
-*   Timestamped logging for configuration and results.
 
 
 ## Evaluation
