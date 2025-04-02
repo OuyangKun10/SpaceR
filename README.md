@@ -11,7 +11,7 @@ predicted_answer: <think>There are three chairs in the room. Two are placed arou
 
 ground truth: 3
 
-We curate a dataset tailored for video spatial reasoning and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench.
+We curate a dataset tailored for video spatial reasoning based on ScanNet and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench.
 
 | Model                      | obj_appearance_order | object_abs_distance | object_counting | object_rel_distance | object_size_estimation | room_size_estimation | route_planning | object_rel_direction | Overall_acc |
 | :------------------------- | :------------------- | :------------------ | :-------------- | :------------------ | :--------------------- | :------------------- | :------------- | :------------------- | :---------- |
