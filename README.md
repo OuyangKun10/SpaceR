@@ -1,8 +1,9 @@
 📅 News
 
+🚀 [04/02/2025] We share the draft version of Spatial-R1 on arxiv.
+
 🚀 [03/31/2025] We release evluation code.
 
-🚀 [04/02/2025] We share the draft version of Spatial-R1 on arxiv.
 
 # Spatial-R1
 The first MLLM trained using GRPO for spatial reasoning in videos
@@ -17,13 +18,13 @@ predicted_answer: <think>There are three chairs in the room. Two are placed arou
 
 ground truth: 3
 
-We curate a dataset tailored for video spatial reasoning based on ScanNet and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench.
+We curate a dataset tailored for video spatial reasoning based on ScanNet and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench. **Spatial-R1-Tiny** is trained on the tiny set of SR dataset, which contains 9k samples. 
 
 | Model                      | obj_appearance_order | object_abs_distance | object_counting | object_rel_distance | object_size_estimation | room_size_estimation | route_planning | object_rel_direction | Overall_acc |
 | :------------------------- | :------------------- | :------------------ | :-------------- | :------------------ | :--------------------- | :------------------- | :------------- | :------------------- | :---------- |
 | Qwen2.5-VL-7B(zero-shot) | 32.69                | 17.48               | 33.96           | 35.77               | 51.85                  | 36.60                | 29.38          | 37.73                | 34.43       |
 | Qwen2.5-VL-7B(CoT)       | 30.42                | 12.10               | 15.84           | 31.83               | 19.12                  | 24.24                | 34.54          | 34.68                | 25.35       |
-| Spatial-R1      | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
+| Spatial-R1-Tiny      | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
 
 
 
