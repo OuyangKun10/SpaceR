@@ -1,3 +1,9 @@
+📅 News
+
+🚀 [03/31/2025] We release evluation code.
+
+🚀 [04/02/2025] We share the draft version of Spatial-R1 on arxiv.
+
 # Spatial-R1
 The first MLLM trained using GRPO for spatial reasoning in videos
 
