@@ -4,9 +4,11 @@
 
 🚀 [03/31/2025] We release evluation code.
 
-🚀 Data Preparation
+🚀 **Data Preparation**:
 
-Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset) of SR_datsset
+1. Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset) of SR_datsset
+
+2. Annotations to be uploaded
 
 # Spatial-R1
 The first MLLM trained using GRPO for spatial reasoning in videos
