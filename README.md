@@ -6,7 +6,7 @@
 
 🚀 Data Preparation
 
-Download [videos][https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset] of SR_datsset
+Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset) of SR_datsset
 
 # Spatial-R1
 The first MLLM trained using GRPO for spatial reasoning in videos
