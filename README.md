@@ -8,7 +8,7 @@
 
 🚀 **Data Preparation**:
 
-1. Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset) of SR_datsset
+1. Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset) of SR_dataset
 
 2. Annotations to be uploaded
 
