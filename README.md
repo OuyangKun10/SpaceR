@@ -1,5 +1,7 @@
 📅 News
 
+🚀 [04/07/2025] We release checkpoint of [Spatial-R1-tiny](https://huggingface.co/RUBBISHLIKE/Spatial-R1-tiny)
+
 🚀 [04/02/2025] We share the draft version of Spatial-R1 on arxiv.
 
 🚀 [03/31/2025] We release evluation code.
