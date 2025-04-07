@@ -4,7 +4,7 @@
 
 🚀 [04/02/2025] We share the draft version of Spatial-R1 on arxiv.
 
-🚀 [03/31/2025] We release evluation code.
+🚀 [03/31/2025] We release evluation and training code.
 
 🚀 **Data Preparation**:
 
