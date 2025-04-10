@@ -35,9 +35,26 @@ We curate a dataset tailored for video spatial reasoning based on ScanNet and tr
 | Qwen2.5-VL-7B(CoT)       | 30.42                | 12.10               | 15.84           | 31.83               | 19.12                  | 24.24                | 34.54          | 34.68                | 25.35       |
 | Spatial-R1-Tiny      | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
 
+## Training
+```bash
+git clone https://github.com/OuyangKun10/Spatial-R1.git
+cd Spatial-R1/spatial-r1
 
+# build environment
+conda create -n spatial-r1 python=3.11 
+conda activate spatial-r1
+bash setup.sh
 
-
+# qwen video extraction setting, e.g., max frames, resolutions
+# Use the [decord] feature to improve speed
+cd src/qwen-vl-utils
+pip install -e .[decord]
+cd ..
+```
+**Training script for Spatial-r1**
+```bash
+bash ./src/scripts/run_grpo_video.sh
+```
 ## Evaluation
 
 ## Setup
