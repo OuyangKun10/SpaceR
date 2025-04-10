@@ -1,4 +1,5 @@
 📅 News
+🚀 [04/10/2025] We update the training framework of Sptial-r1
 
 🚀 [04/07/2025] We release checkpoint of [Spatial-R1-tiny](https://huggingface.co/RUBBISHLIKE/Spatial-R1-tiny)
 
