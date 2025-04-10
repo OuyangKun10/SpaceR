@@ -1,6 +1,6 @@
 📅 News
 
-🚀 [04/10/2025] We update the training framework of Sptial-r1
+🚀 [04/10/2025] We update the training framework of Sptial-r1, and release [Sptial-R1-exp-1500](https://huggingface.co/RUBBISHLIKE/Sptial-R1-exp-1500), which is trained on SR dataset (91k). 1500 means the training steps. We will release final model after finshing training process.
 
 🚀 [04/07/2025] We release checkpoint of [Spatial-R1-tiny](https://huggingface.co/RUBBISHLIKE/Spatial-R1-tiny)
 
@@ -25,11 +25,14 @@ ground truth: 3
 
 We curate a dataset tailored for video spatial reasoning based on ScanNet and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench. **Spatial-R1-Tiny** is trained on the tiny set of SR dataset, which contains 9k samples. 
 
+🏆 Performance Comparison 
+
 | Model                      | obj_appearance_order | object_abs_distance | object_counting | object_rel_distance | object_size_estimation | room_size_estimation | route_planning | object_rel_direction | Overall_acc |
 | :------------------------- | :------------------- | :------------------ | :-------------- | :------------------ | :--------------------- | :------------------- | :------------- | :------------------- | :---------- |
 | Qwen2.5-VL-7B(zero-shot) | 32.69                | 17.48               | 33.96           | 35.77               | 51.85                  | 36.60                | 29.38          | 37.73                | 34.43       |
 | Qwen2.5-VL-7B(CoT)       | 30.42                | 12.10               | 15.84           | 31.83               | 19.12                  | 24.24                | 34.54          | 34.68                | 25.35       |
 | Spatial-R1-Tiny      | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
+|Sptial-R1-exp-1500    |57.28                 |29.78                |63.24            | 39.15               |60.76                   |45.07                 |28.87           |45.02                 |46.15        |   
 
 ## Training
 ```bash
