@@ -23,9 +23,11 @@ predicted_answer: <think>There are three chairs in the room. Two are placed arou
 
 ground truth: 3
 
-We curate a dataset tailored for video spatial reasoning based on ScanNet and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench. **Spatial-R1-Tiny** is trained on the tiny set of SR dataset, which contains 9k samples. 
+We curate a dataset tailored for video spatial reasoning based on ScanNet and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench and STI-Bench. **Spatial-R1-Tiny** is trained on the tiny set of SR dataset, which contains 9k samples. 
 
 🏆 Performance Comparison 
+
+1. **VSI-Bench**
 
 | Model                      | obj_appearance_order | object_abs_distance | object_counting | object_rel_distance | object_size_estimation | room_size_estimation | route_planning | object_rel_direction | Overall_acc |
 | :------------------------- | :------------------- | :------------------ | :-------------- | :------------------ | :--------------------- | :------------------- | :------------- | :------------------- | :---------- |
@@ -33,6 +35,14 @@ We curate a dataset tailored for video spatial reasoning based on ScanNet and tr
 | Qwen2.5-VL-7B(CoT)       | 30.42                | 12.10               | 15.84           | 31.83               | 19.12                  | 24.24                | 34.54          | 34.68                | 25.35       |
 | Spatial-R1-Tiny      | 36.76                | 32.99               | 62.94           | 38.15               | 58.12                  | 31.04                | 28.87          | 32.72                | 41.81       |
 |Sptial-R1-exp-1500    |57.28                 |29.78                |63.24            | 39.15               |60.76                   |45.07                 |28.87           |45.02                 |46.15        |   
+
+2. **STI-Bench**
+
+| Model                    | 3D Video Grounding<br>317 | Dimensional Measurement<br>289 | Displacement & Path Length<br>358 | Ego-Centric Orientation<br>185 | Pose Estimation<br>360 | Spatial Relation<br>146 | Speed & Acceleration<br>331 | Trajectory Description<br>78 | Overall<br>2064 | SR_sub acc<br>1387 |
+|--------------------------|--------------------------|------------------------------|-----------------------------------|-------------------------------|-----------------------|------------------------|--------------------------|----------------------------|-----------------|--------------------|
+| Qwen2.5-VL-7B(zero-shot) | 33.75                    | 21.45                        | 23.74                             | 35.14                         | 50.83                 | 44.52                  | 31.71                    | 47.44                      | 36.07           | 30.21              |
+| Spatial-R1-exp-1500      | 20.82                    | 30.10                        | 34.36                             | 37.30                         | 43.06                 | 51.37                  | 34.44                    | 44.87                      | 37.04           | 36.27              |
+
 
 ## Training
 ```bash
