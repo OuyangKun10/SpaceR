@@ -103,3 +103,18 @@ bash ./src/scripts/run_grpo_video.sh
 The script automatically calculates and prints/logs overall and per-task accuracy upon completion.
 
 We will release the final version of **SR** dataset after all work is done.
+
+**Citation:**
+
+```bash
+@misc{ouyang2025spatialr1enhancingmllmsvideo,
+      title={Spatial-R1: Enhancing MLLMs in Video Spatial Reasoning}, 
+      author={Kun Ouyang},
+      year={2025},
+      eprint={2504.01805},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2504.01805}, 
+}
+```
+
