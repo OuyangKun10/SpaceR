@@ -18,7 +18,9 @@ The first MLLM trained using GRPO for spatial reasoning in videos
 
 We curate a dataset tailored for video spatial reasoning based on ScanNet and train Qwen2-VL-7B using grpo method. It achieves promising gains in VSI-Bench and STI-Bench. **Spatial-R1-Tiny** is trained on the tiny set of SR dataset, which contains 9k samples. **NOTE** We have excluded videos used in VSI-Bench to prevent data leakage.
 
-<iframe src="https://docs.google.com/viewer?url=https://github.com/OuyangKun10/Spatial-R1/blob/main/figure/QA_visual.pdf&embedded=true" style="width:100%; height:600px;" frameborder="0"></iframe>
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">TEAM</div><img src='figure/QA_visual.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
 
 🏆 Performance Comparison 
 
