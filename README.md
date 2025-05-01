@@ -45,7 +45,7 @@ cd ..
 ```
 **Data Preparation**:
 
-1. Download Spatial-R1-151k dataset [videos](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k).
+1. Download [Spatial-R1-151k dataset](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k).
 
 2. Decompress it
    
