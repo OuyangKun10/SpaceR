@@ -44,14 +44,14 @@ pip install -e .[decord]
 cd ..
 ```
 **Data Preparation**:
-https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k
-1. Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k) of SR-91k.
 
+1. Download Spatial-R1-151k dataset [videos](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k).
+
+2. Decompress it
+   
 ```bash
 bash decompress.sh
 ```
-
-2. Annotations 
 
    
 **Training script for Spatial-r1**
