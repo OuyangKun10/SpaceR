@@ -15,6 +15,13 @@
 # Spatial-R1
 The first MLLM trained using GRPO for spatial reasoning in videos
 
+**Overall Performance on Video Spatial Reasoning**
+<img src="./figure/overall_performance.png"/>
+
+**Data Statistics of Spatial-R1-151k**
+<img src="./figure/data_statistics.png"/>
+
+**QA Examples of SR-91k**
 
 <img src="./figure/QA_visual.png"/>
 
