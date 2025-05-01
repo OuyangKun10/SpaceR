@@ -64,8 +64,8 @@ pip install -e .[decord]
 cd ..
 ```
 **Data Preparation**:
-
-1. Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset) of SR_dataset
+https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k
+1. Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k) of SR-91k.
 
 ```bash
 bash decompress.sh
