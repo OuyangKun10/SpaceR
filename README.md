@@ -67,6 +67,10 @@ cd ..
 
 1. Download [videos](https://huggingface.co/datasets/RUBBISHLIKE/SR_dataset) of SR_dataset
 
+```bash
+bash decompress.sh
+```
+
 2. Annotations 
 
    
