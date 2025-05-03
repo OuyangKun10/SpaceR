@@ -2,7 +2,7 @@
 
 🚀 [04/29/2025] We release [SR-91k](https://github.com/OuyangKun10/Spatial-R1/blob/main/annotation/SR-91k.jsonl) annotations.
 
-🚀 [04/10/2025] We update the training framework of Sptial-r1, and release [Sptial-R1-exp-1500](https://huggingface.co/RUBBISHLIKE/Sptial-R1-exp-1500), which is trained on SR dataset (91k). 1500 means the training steps. We will release final model after finshing training process.
+🚀 [04/10/2025] We update the training framework of Spatial-r1, and release [Spatial-R1-exp-1500](https://huggingface.co/RUBBISHLIKE/Sptial-R1-exp-1500), which is trained on SR dataset (91k). 1500 means the training steps. We will release final model after finshing training process.
 
 🚀 [04/07/2025] We release checkpoint of [Spatial-R1-tiny](https://huggingface.co/RUBBISHLIKE/Spatial-R1-tiny)
 
