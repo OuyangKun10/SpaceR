@@ -3,6 +3,7 @@
 
 
 📅 News
+
 🚀 [05/10/2025] We release [Spatial-R1](https://huggingface.co/RUBBISHLIKE/Spatial-R1) checkpoint.
 
 🚀 [04/29/2025] We release [Spatial-R1-151k](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k) dataset.
