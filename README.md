@@ -1,10 +1,13 @@
+# Spatial-R1: Reinforcing MLLMs in Video Spatial Reasoning  
+[📖 Paper] [🤗 Spatial-R1](https://huggingface.co/RUBBISHLIKE/Spatial-R1) [🤗 Spatial-R1-151k](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k)
+
+
 📅 News
+🚀 [05/10/2025] We release [Spatial-R1](https://huggingface.co/RUBBISHLIKE/Spatial-R1) checkpoint.
 
-🚀 [04/29/2025] We release [SR-91k](https://github.com/OuyangKun10/Spatial-R1/blob/main/annotation/SR-91k.jsonl) annotations.
+🚀 [04/29/2025] We release [Spatial-R1-151k](https://huggingface.co/datasets/RUBBISHLIKE/Spatial-R1-151k) dataset.
 
-🚀 [04/10/2025] We update the training framework of Spatial-r1, and release [Spatial-R1-exp-1500](https://huggingface.co/RUBBISHLIKE/Sptial-R1-exp-1500), which is trained on SR dataset (91k). 1500 means the training steps. We will release final model after finshing training process.
-
-🚀 [04/07/2025] We release checkpoint of [Spatial-R1-tiny](https://huggingface.co/RUBBISHLIKE/Spatial-R1-tiny)
+🚀 [04/10/2025] We update the training framework of Spatial-R1.
 
 🚀 [04/02/2025] We share the draft version of Spatial-R1 on arxiv.
 
