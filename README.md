@@ -108,3 +108,8 @@ We will release the final version of **SR** dataset after all work is done.
 }
 ```
 
+## License
+* The code in this repo is released under the [CC BY-NC 4.0](https://github.com/OuyangKun10/Spatial-R1/blob/main/LICENSE) License. 
+* The usage of Spatial-R1-151k dataset and Spatial-R1 model weights must strictly follow [CC BY-NC 4.0](https://github.com/OuyangKun10/Spatial-R1/blob/main/LICENSE) License. 
+
+
