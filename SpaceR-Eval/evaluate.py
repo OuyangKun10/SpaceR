@@ -53,17 +53,17 @@ def prepare_data(task: str) -> tuple[str | list[str], str]:
             - The path to the directory containing video files.
     """
     if task =='VSI-Bench':
-        return "/mnt/moonfs/ouyangkun-m2/dataset/VSI_bench/test-00000-of-00001.parquet", "/mnt/moonfs/ouyangkun-m2/dataset/VSI_bench"
+        return "VSI_bench/test-00000-of-00001.parquet", "VSI_bench"
     elif task =="STI-Bench":
-        return "/mnt/moonfs/ouyangkun-m2/dataset/STI-Bench/qa.parquet","/mnt/moonfs/ouyangkun-m2/dataset/STI-Bench/video"
+        return "STI-Bench/qa.parquet","STI-Bench/video"
     elif task =='SPAR-Bench':
-         return ['/mnt/moonfs/ouyangkun-m2/dataset/SPAR-Bench/data/test-00000-of-00004.parquet','/mnt/moonfs/ouyangkun-m2/dataset/SPAR-Bench/data/test-00001-of-00004.parquet','/mnt/moonfs/ouyangkun-m2/dataset/SPAR-Bench/data/test-00002-of-00004.parquet','/mnt/moonfs/ouyangkun-m2/dataset/SPAR-Bench/data/test-00003-of-00004.parquet'],'/mnt/moonfs/ouyangkun-m2/dataset/SPAR-7M/spar/structured3d/images'
+         return ['SPAR-Bench/data/test-00000-of-00004.parquet','SPAR-Bench/data/test-00001-of-00004.parquet','SPAR-Bench/data/test-00002-of-00004.parquet','SPAR-Bench/data/test-00003-of-00004.parquet'],'SPAR-7M/spar/structured3d/images'
     elif task=='Video-MME':
-        return '/mnt/moonfs/ouyangkun-m2/dataset/Video-MME/videomme/test-00000-of-00001.parquet','/mnt/moonfs/ouyangkun-m2/dataset/Video-MME/data'
+        return 'Video-MME/videomme/test-00000-of-00001.parquet','Video-MME/data'
     elif task=='LongVideoBench':
-        return '/mnt/moonfs/ouyangkun-m2/dataset/LongVideoBench/lvb_val.json', '/mnt/moonfs/ouyangkun-m2/dataset/LongVideoBench/videos'
+        return 'LongVideoBench/lvb_val.json', 'LongVideoBench/videos'
     elif task=='TempCompass':
-        return "/mnt/moonfs/ouyangkun-m2/dataset/TempCompass/eval_tempcompass.json", "/mnt/moonfs/ouyangkun-m2/dataset/TempCompass/videos"
+        return "TempCompass/eval_tempcompass.json", "TempCompass/videos"
     else:
         raise ValueError(f"Task {task} not recognized for data preparation.")
 
@@ -85,9 +85,9 @@ if __name__ == "__main__":
     data_file, video_dir = prepare_data(EVAL_TASK)
 
     # Base directory for storing evaluation results
-    output_dir_base = "/mnt/moonfs/ouyangkun-m2/repo/SpaceR/SpaceR-Eval/res/Qwen2.5-VL-7B-Instruct"
+    output_dir_base = "/res/Qwen2.5-VL-7B-Instruct"
     # Path of the model being evaluated
-    model_name="/mnt/moonfs/ouyangkun-m2/model/Qwen2.5-VL-7B-Instruct"
+    model_name="Qwen/Qwen2.5-VL-7B-Instruct"
    
     # Create a timestamped directory for this specific run's outputs
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")

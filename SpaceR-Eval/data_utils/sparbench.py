@@ -111,7 +111,7 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
 
     data_frames = []
     for file_path in parquet_file:
-        file_path=os.path.join("/mnt/moonfs/ouyangkun-m2/dataset/SPAR-Bench/data",file_path)
+        file_path=os.path.join("SPAR-Bench/data",file_path)
         if os.path.exists(file_path):
             df = pd.read_parquet(file_path)
             data_frames.append(df)
