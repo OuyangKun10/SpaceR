@@ -1,3 +1,0 @@
-datasets:
-    - json_path: /mnt/moonfs/ouyangkun-m2/code/spatial_reasoning/processed_data/llava-video_30_60_s_perceptiontest_mc_qa_processed_618_with_duration.jsonl
-
