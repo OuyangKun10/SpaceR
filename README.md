@@ -6,6 +6,8 @@
 
 📅 News
 
+🚀 [05/10/2025] We release [SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k) dataset.
+
 🚀 [05/10/2025] We release [SpaceR](https://huggingface.co/RUBBISHLIKE/SpaceR) checkpoint.
 
 🚀 [04/29/2025] We release [SR-91k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k) dataset.
