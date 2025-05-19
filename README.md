@@ -1,5 +1,5 @@
 # SpaceR: Reinforcing MLLMs in Video Spatial Reasoning  
-[📖 Paper](https://github.com/OuyangKun10/SpaceR/blob/main/SpaceR.pdf) [🤗 SpaceR](https://huggingface.co/RUBBISHLIKE/SpaceR) [🤗 SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k)
+[📖 Paper](https://github.com/OuyangKun10/SpaceR/blob/main/SpaceR_Preprint.pdf) [🤗 SpaceR](https://huggingface.co/RUBBISHLIKE/SpaceR) [🤗 SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k)
 
 
 📅 News
