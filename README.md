@@ -14,7 +14,7 @@
 
 🚀 [04/10/2025] We update the training framework of SpaceR.
 
-🚀 [04/02/2025] We share the draft version of SpaceR on arxiv.
+🚀 [04/02/2025] We share the paper SpaceR on arxiv.
 
 🚀 [03/31/2025] We release evluation and training code.
 
