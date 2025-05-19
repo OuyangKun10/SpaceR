@@ -1,5 +1,5 @@
 
-# <img src="./figure/SpaceR.png" width="60" height="60" /> SpaceR: Reinforcing MLLMs in Video Spatial Reasoning  
+# <img src="./figure/SpaceR.png" width="50" height="50" /> SpaceR: Reinforcing MLLMs in Video Spatial Reasoning  
 [📖 Paper](https://github.com/OuyangKun10/SpaceR/blob/main/SpaceR_Preprint.pdf) [🤗 SpaceR](https://huggingface.co/RUBBISHLIKE/SpaceR) [🤗 SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k)
 
 
