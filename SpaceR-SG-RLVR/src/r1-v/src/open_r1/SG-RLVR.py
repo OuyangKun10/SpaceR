@@ -56,38 +56,26 @@ class GRPOScriptArguments(ScriptArguments):
     )
 def accuracy_reward(completions, solution,path, **kwargs):
     def fuzzy_matching(pred):
-        """
-        更加鲁棒的答案提取函数，从整段话中识别数字单词和数字形式并转换为数字。
-
-        Args:
-            pred: 预测字符串。
-
-        Returns:
-            提取出的数值字符串或原始字符串 (如果无法提取数值)。
-        """
-        pred = pred.strip().lower() # 去除首尾空白并转换为小写，方便统一处理
-
-        # 数字单词映射 (小写)
+        pred = pred.strip().lower() 
         number_words = {
             'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5',
             'six': '6', 'seven': '7', 'eight': '8', 'nine': '9', 'ten': '10',
             'eleven': '11', 'twelve': '12', 'thirteen': '13', 'fourteen': '14', 'fifteen': '15',
             'sixteen': '16', 'seventeen': '17', 'eighteen': '18', 'nineteen': '19', 'twenty': '20',
             'thirty': '30', 'forty': '40', 'fifty': '50', 'sixty': '60', 'seventy': '70', 'eighty': '80', 'ninety': '90',
-            'zero': '0' , 'a': '1', 'an': '1' # 添加 'a' 和 'an' 映射到 '1'
+            'zero': '0' , 'a': '1', 'an': '1' 
         }
 
-        # 先查找数字单词
+
         for word, digit in number_words.items():
-            if re.search(r'\b' + word + r'\b', pred): # 使用 \b 确保匹配完整单词
-                return digit # 如果找到数字单词，立即返回对应的数字字符串 (优先数字单词)
+            if re.search(r'\b' + word + r'\b', pred):
+                return digit 
 
-        # 如果没有找到数字单词，再查找数字形式 (整数或小数)
-        number_match = re.search(r'\d+(\.\d+)?', pred) # 查找数字模式
+        number_match = re.search(r'\d+(\.\d+)?', pred) 
         if number_match:
-            return number_match.group(0) # 返回找到的第一个数字字符串
+            return number_match.group(0) 
 
-        return "None" # 如果两种方式都找不到数字，则返回 "None"
+        return "None" 
     def to_float(pred):
         try:
             pred = float(pred)
@@ -120,13 +108,6 @@ def accuracy_reward(completions, solution,path, **kwargs):
         "MRA:.5:.95:.05": 0.,
     }
     def compute_na_accuracy(content_answer,sol):
-        # for key, value in METRICS_FOR_NA.items():
-        #     try:
-        #         score = eval(value)(to_float(fuzzy_matching(content_answer)), to_float(sol)) 
-        #     except TypeError:
-        #         score = WORST_CASE_FOR_METRICS[key]
-        # return score
-        # Default score
         try:
             score = mean_relative_accuracy(content_answer, sol)
         except Exception as e:
@@ -209,7 +190,7 @@ def accuracy_reward(completions, solution,path, **kwargs):
                 if gt_number is None or out_number is None:
                     reward = 0.0
                 else:
-                    reward = compute_na_accuracy(out_number,gt_number)#1.0 if round(gt_number, 2) == round(out_number, 2) else 0.0
+                    reward = compute_na_accuracy(out_number,gt_number)
                     if reward>0.5 and '<map>' in content and '</map>' in content:
                         map_solution=MAP_DATA[os.path.splitext(os.path.basename(pa))[0]]
                         cognitive_map=map_solution['cognitive_map']
@@ -245,7 +226,7 @@ def accuracy_reward(completions, solution,path, **kwargs):
         
         if os.getenv("DEBUG_MODE") == "true":
             log_path = os.getenv("LOG_PATH")
-            # local_rank = int(os.getenv("LOCAL_RANK", 0))
+
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write(f"------------- {current_time} Accuracy reward: {reward} -------------\n")
                 f.write(f"Content: {content}\n")
