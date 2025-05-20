@@ -1,16 +1,16 @@
 #!/bin/bash
 
-prefix="SR_Video.part_"
+prefix="SpaceR-151k.part_"
 total_parts=10
 
-output_file="SR_Video.tar.gz"  
-target_directory="Spatial-R1-151k/SR-91k"  
+output_file="SpaceR-151k.tar.gz"  
+target_directory="SpaceR-151k"  
 
 
 mkdir -p "$target_directory"
 
 echo "开始合并分卷文件..."
-for ((i=1; i<=total_parts; i++)); do
+for ((i=0; i<total_parts; i++)); do
     formatted_i=$(printf "%02d" "$i")
     part_file="${prefix}${formatted_i}"
     if [ -f "$part_file" ]; then
