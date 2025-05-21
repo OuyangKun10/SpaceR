@@ -74,11 +74,6 @@ High = [
     "distance_infer_center_oo_mv"
 ]
 
-# hf_home = os.getenv("HF_HOME", "~/.cache/huggingface/")
-# base_cache_dir = os.path.expanduser(hf_home)
-# base_cache_dir = "/cache/data/sparbench_tiny_image"
-# base_cache_dir = "/cache/data/sparbench_image"
-
 
 def sparbench_doc_to_text(doc, lmms_eval_specific_kwargs=None):
     question = doc["question"]
@@ -284,7 +279,7 @@ def sparbench_aggregate_results(results):
     results = pd.DataFrame(results)
     output = {}
     
-    # 不按 img_type 分类的统计
+
     overall_output = {}
     for question_type, question_type_indexes in results.groupby('task').groups.items():
         per_question_type = results.iloc[question_type_indexes]
@@ -304,12 +299,12 @@ def sparbench_aggregate_results(results):
 
     overall_output['overall_accuracy'] = sum([_ for _ in overall_output.values()]) / len(overall_output)
     
-    # 按 img_type 分类的统计
+
     img_type_output = {}
     for img_type, img_type_group in results.groupby('image_type'):
         img_type_output[img_type] = {}
         
-        # 重置索引，使其从 0 开始
+ 
         img_type_group = img_type_group.reset_index(drop=True)
         
         for question_type, question_type_indexes in img_type_group.groupby('task').groups.items():
@@ -328,14 +323,14 @@ def sparbench_aggregate_results(results):
                 if question_type == "view_change_infer":
                     img_type_output[img_type]["{question_type}_vci_metric"] = per_question_type["vci_metric"].mean()
 
-        # 计算该 img_type 的总体准确率
+   
         img_type_output[img_type]['overall_accuracy'] = sum([_ for _ in img_type_output[img_type].values()]) / len(img_type_output[img_type])
 
-    # 合并输出结果
+
     output['overall'] = overall_output
     output['by_img_type'] = img_type_output
 
-    # 计算 Low, Middle, High 的平均值
+
     low_list = []
     middle_list = []
     high_list = []
@@ -354,7 +349,7 @@ def sparbench_aggregate_results(results):
     output['overall']['Middle'] = np.mean(middle_list)
     output['overall']['High'] = np.mean(high_list)
 
-    # 对每个 img_type 计算 Low, Middle, High 的平均值
+
     for img_type in img_type_output:
         low_list = []
         middle_list = []
