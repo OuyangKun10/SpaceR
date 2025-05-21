@@ -1,16 +1,16 @@
 import os
 import json
-import jsonlines # Ensure jsonlines is imported if used
+import jsonlines 
 import pickle
 import pandas as pd
-import csv # Ensure csv is imported
+import csv 
 import re
 import ast
 from collections import defaultdict
 import logging
-from typing import List, Dict, Union, Any, Set, Tuple, TypeAlias # For type hints if used more broadly
+from typing import List, Dict, Union, Any, Set, Tuple, TypeAlias 
 
-# Define type aliases for clarity in docstrings, assuming these structures
+
 Coordinate: TypeAlias = List[int] # Typically [x, y]
 CoordinatesList: TypeAlias = List[Coordinate]
 ObjectMap: TypeAlias = Dict[str, CoordinatesList] # e.g., {"object_name": [[x1,y1], [x2,y2]]}
@@ -44,13 +44,12 @@ def read_data(file_path: str, file_format: str = None) -> Union[List[Dict[str, A
         if file_format == 'json':
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                if not isinstance(data, list): # If the JSON root is not a list
+                if not isinstance(data, list): 
                     try:
-                        f.seek(0) # Rewind to try reading line by line
+                        f.seek(0) 
                         data = [json.loads(line) for line in f]
                     except json.JSONDecodeError:
-                        # Warning: JSON file content is not a list or a JSON object per line,
-                        # attempted to read line by line but parsing failed.
+           
                         print(f"Warning: JSON file content is not a list or a JSON object per line, attempted to read line by line but parsing failed.")
                         return None
 
@@ -62,12 +61,10 @@ def read_data(file_path: str, file_format: str = None) -> Union[List[Dict[str, A
         elif file_format == 'pkl' or file_format == 'pickle':
             with open(file_path, 'rb') as f:
                 data = pickle.load(f)
-                if not isinstance(data, list): # If pickle content is not a list, try to convert
+                if not isinstance(data, list): 
                     try:
-                        data = list(data) # Attempt to convert to a list
+                        data = list(data) 
                     except Exception as e:
-                        # Warning: Pickle file content is not a list or iterable,
-                        # failed to convert to list.
                         print(f"Warning: Pickle file content is not a list or iterable, failed to convert to list: {e}")
                         return None
 
