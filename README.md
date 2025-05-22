@@ -87,15 +87,13 @@ bash ./src/scripts/run_SpaceR_SG_RLVR.sh
 
 **Citation:**
 
-```bash
-@article{ouyang2025spatialr1enhancingmllmsvideo,
-      title={Spatial-R1: Enhancing MLLMs in Video Spatial Reasoning}, 
-      author={Kun Ouyang},
+```
+@article{ouyang2025spacerreinforcingmllmsvideo,
+      title={SpaceR: Reinforcing MLLMs in Video Spatial Reasoning}, 
+      author={Kun Ouyang and Yuanxin Liu and Haoning Wu and Yi Liu and Hao Zhou and Jie Zhou and Fandong Meng and Xu Sun},
       year={2025},
       eprint={2504.01805},
       archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2504.01805}, 
 }
 ```
 
