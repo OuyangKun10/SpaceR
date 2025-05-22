@@ -91,9 +91,8 @@ bash ./src/scripts/run_SpaceR_SG_RLVR.sh
 @article{ouyang2025spacerreinforcingmllmsvideo,
       title={SpaceR: Reinforcing MLLMs in Video Spatial Reasoning}, 
       author={Kun Ouyang and Yuanxin Liu and Haoning Wu and Yi Liu and Hao Zhou and Jie Zhou and Fandong Meng and Xu Sun},
+      journal={arXiv preprint arXiv:2504.01805},
       year={2025},
-      eprint={2504.01805},
-      archivePrefix={arXiv},
 }
 ```
 
