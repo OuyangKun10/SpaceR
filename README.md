@@ -70,7 +70,7 @@ bash ./src/scripts/run_SpaceR_SG_RLVR.sh
 
 **SpaceR-Eval**
 
-## Setup
+**Setup**
 
 1.  **Environment:** Python 3.8+, CUDA-enabled GPUs.
 2.  **Install Libraries:**
@@ -80,7 +80,7 @@ bash ./src/scripts/run_SpaceR_SG_RLVR.sh
 3.  **Dataset:** VSI-Bench STI-Bench, SPAR-Bench, Video-MME, TempCompass, LongVideoBench
 
 
-## Usage
+**Usage**
     ```bash
     python evaluate.py
     ```
