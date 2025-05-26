@@ -198,27 +198,85 @@ def normalize_answer(text: str) -> str:
     return None
 
 def stibench_aggregate_results(results):
-    results_df = pd.DataFrame(results)  
+    """
+    Aggregates STI-Bench results, calculating per-task scores,
+    and weighted overall_accuracy and sr_sub_accuracy.
+    Weights are based on the number of samples per task.
+    """
+    results_df = pd.DataFrame(results)
 
-    output = {}
+    if results_df.empty:
+        eval_logger.warning("Input results for stibench_aggregate_results is empty.")
+        empty_output = {task: np.nan for task in SR_SUB_TASKS}
+        empty_output['sr_sub_accuracy'] = np.nan
+        empty_output['overall_accuracy'] = np.nan
+        return empty_output
 
-    for question_type, question_type_indexes in results_df.groupby('task').groups.items():
-        per_question_type = results_df.iloc[question_type_indexes]
-        output[f"{question_type}"] = per_question_type['accuracy'].mean()
-    sr_sub_tasks_acc = []
-    for task in SR_SUB_TASKS:
-        if task in output:
-            sr_sub_tasks_acc.append(output[task])
-    if sr_sub_tasks_acc:
-        output['sr_sub_accuracy'] = sum(sr_sub_tasks_acc) / len(sr_sub_tasks_acc)
+    output = {} 
+
+    # --- Calculate per-task average accuracies AND get task counts ---
+    task_accuracies = {}
+    task_counts = results_df.groupby('task').size().to_dict() 
+
+    for task_name, group_df in results_df.groupby('task'):
+        if 'accuracy' in group_df.columns and not group_df['accuracy'].isnull().all():
+            task_accuracies[task_name] = group_df['accuracy'].mean()
+        else:
+            task_accuracies[task_name] = np.nan
+            if task_name not in task_counts: 
+                 task_counts[task_name] = 0
+            eval_logger.warning(f"Task '{task_name}' has no valid accuracy data or was empty. Its accuracy set to NaN.")
+
+    output.update(task_accuracies)
+
+    # --- Calculate WEIGHTED sr_sub_accuracy ---
+    weighted_sum_sr = 0.0
+    total_weight_sr = 0.0
+    valid_sr_tasks_contributing = 0
+
+    for task_name in SR_SUB_TASKS:
+        if task_name in task_accuracies and task_name in task_counts and not pd.isna(task_accuracies[task_name]):
+            accuracy = task_accuracies[task_name]
+            count = task_counts[task_name]
+            if count > 0 : 
+                weighted_sum_sr += accuracy * count
+                total_weight_sr += count
+                valid_sr_tasks_contributing +=1
+
+    if total_weight_sr > 0:
+        output['sr_sub_accuracy'] = weighted_sum_sr / total_weight_sr
     else:
-        output['sr_sub_accuracy'] = 0.0  
+        output['sr_sub_accuracy'] = np.nan 
 
-    output['overall_accuracy'] = sum([_ for _ in output.values()]) / len(output) if output else 0.0
+    # --- Calculate WEIGHTED overall_accuracy (across ALL tasks that have results) ---
+    weighted_sum_overall = 0.0
+    total_weight_overall = 0.0
+    valid_overall_tasks_contributing = 0
 
-    eval_logger = logging.getLogger('eval_logger')
-    eval_logger.info(f"Evaluation results: {output}")
+    for task_name in task_accuracies:
+        if task_name in task_counts and not pd.isna(task_accuracies[task_name]):
+            accuracy = task_accuracies[task_name]
+            count = task_counts.get(task_name, 0) 
+            if count > 0: 
+                weighted_sum_overall += accuracy * count
+                total_weight_overall += count
+                valid_overall_tasks_contributing +=1
 
+    if total_weight_overall > 0:
+        output['overall_accuracy'] = weighted_sum_overall / total_weight_overall
+    else:
+        output['overall_accuracy'] = np.nan 
+
+    def nan_to_null_serializer(obj):
+        if isinstance(obj, float) and np.isnan(obj):
+            return None
+        if isinstance(obj, np.generic): 
+             if np.isnan(obj):
+                 return None
+             return obj.item() 
+        return obj
+
+    eval_logger.info(f"STI-Bench Weighted Evaluation results: {json.dumps(output, indent=2, default=nan_to_null_serializer)}")
     return output
 
 def stibench_eval(jsonl_file_path,mode="thinking"):
