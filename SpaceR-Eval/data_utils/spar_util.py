@@ -275,99 +275,176 @@ def sparbench_process_results(doc):
 import pandas as pd
 import numpy as np
 
-def sparbench_aggregate_results(results):
-    results = pd.DataFrame(results)
+def sparbench_aggregate_results(results_list_of_dicts):
+    """
+    Aggregates evaluation results, calculating per-task scores, overall scores,
+    and scores by image type. 'overall_accuracy' and category scores (Low, Middle, High)
+    are calculated using weighted averages, where weights are the number of samples per task.
+    """
+    results_df = pd.DataFrame(results_list_of_dicts)
+
+    if results_df.empty:
+        eval_logger.warning("Input results_list_of_dicts is empty. Returning empty aggregation.")
+        return {"overall": {}, "by_img_type": {}}
+
     output = {}
+    overall_output_metrics = {} 
+
+    metric_suffixes = []
+    for m_name in METRICS_FOR_MCA.keys(): metric_suffixes.append(f"_{m_name}")
+    for m_name in METRICS_FOR_NA.keys(): metric_suffixes.append(f"_{m_name}")
+    if "view_change_infer" in SPECIAL_QUESTION_TYPES:
+        metric_suffixes.append("_vci_metric")
+    metric_suffixes.sort(key=len, reverse=True)
+
+    def get_task_name_from_key(key_str):
+        for suffix in metric_suffixes:
+            if key_str.endswith(suffix):
+                return key_str[:-len(suffix)]
+        eval_logger.warning(f"Could not parse known metric suffix from key: '{key_str}'. Assuming key is base task name.")
+        return key_str
+
+
+    # 1. Populate `overall_output_metrics` with per-task average scores
+    for task_name_iter, task_indices in results_df.groupby('task').groups.items():
+        per_task_df = results_df.iloc[task_indices] 
+        
+        if task_name_iter in MCA_QUESTION_TYPES:
+            for metric_name in METRICS_FOR_MCA.keys():
+                mean_score = per_task_df[metric_name].mean()
+                overall_output_metrics[f"{task_name_iter}_{metric_name}"] = mean_score
+        elif task_name_iter in NA_QUESTION_TYPES:
+            for metric_name in METRICS_FOR_NA.keys():
+                mean_score = per_task_df[metric_name].mean()
+                overall_output_metrics[f"{task_name_iter}_{metric_name}"] = mean_score
+        elif task_name_iter in SPECIAL_QUESTION_TYPES:
+            if task_name_iter == "view_change_infer" and "vci_metric" in per_task_df.columns:
+                mean_score = per_task_df["vci_metric"].mean()
+                overall_output_metrics[f"{task_name_iter}_vci_metric"] = mean_score
+            elif task_name_iter == "view_change_infer": 
+                 overall_output_metrics[f"{task_name_iter}_vci_metric"] = np.nan
+                 eval_logger.warning(f"Metric column 'vci_metric' not found for task '{task_name_iter}'. Setting to NaN.")
+
+    task_counts_overall = results_df.groupby('task').size()
+
+    # 2. Calculate WEIGHTED 'overall_accuracy' for `overall_output_metrics`
+    weighted_sum_overall_accuracy = 0.0
+    total_weight_for_overall_accuracy = 0.0
     
+    for metric_key, avg_task_score in overall_output_metrics.items():
+        if pd.isna(avg_task_score): continue
+        base_task_name = get_task_name_from_key(metric_key)
+        if base_task_name and base_task_name in task_counts_overall:
+            task_weight = task_counts_overall[base_task_name]
+            weighted_sum_overall_accuracy += avg_task_score * task_weight
+            total_weight_for_overall_accuracy += task_weight
+        else:
+            eval_logger.warning(f"Could not find task_name or count for metric_key '{metric_key}' during overall_accuracy calculation. Base task: '{base_task_name}'")
 
-    overall_output = {}
-    for question_type, question_type_indexes in results.groupby('task').groups.items():
-        per_question_type = results.iloc[question_type_indexes]
+    if total_weight_for_overall_accuracy > 0:
+        overall_output_metrics['overall_accuracy'] = weighted_sum_overall_accuracy / total_weight_for_overall_accuracy
+    else:
+        overall_output_metrics['overall_accuracy'] = np.nan
 
-        if question_type in MCA_QUESTION_TYPES:
-            for metric in METRICS_FOR_MCA.keys():
-                overall_output[f"{question_type}_{metric}"] = per_question_type[metric].mean()
-        elif question_type in NA_QUESTION_TYPES:
-            for metric in METRICS_FOR_NA.keys():
-                if metric == 'success_rate':
-                    overall_output[f"{question_type}_{metric}"] = per_question_type[metric].mean()
+    # 3. Calculate WEIGHTED Low, Middle, High category scores for `overall_output`
+    output['overall'] = {}
+    categories = {"Low": Low, "Middle": Middle, "High": High}
+
+    for cat_name, tasks_in_category in categories.items():
+        weighted_sum_category = 0.0
+        total_weight_for_category = 0.0
+        for metric_key, avg_task_score in overall_output_metrics.items():
+            if metric_key == 'overall_accuracy': continue
+            if pd.isna(avg_task_score): continue
+
+            base_task_name = get_task_name_from_key(metric_key)
+            if base_task_name and base_task_name in task_counts_overall and base_task_name in tasks_in_category:
+                task_weight = task_counts_overall[base_task_name]
+                weighted_sum_category += avg_task_score * task_weight
+                total_weight_for_category += task_weight
+        
+        if total_weight_for_category > 0:
+            output['overall'][cat_name] = weighted_sum_category / total_weight_for_category
+        else:
+            output['overall'][cat_name] = np.nan
+            
+    output['overall'] = {**output['overall'], **overall_output_metrics}
+
+
+    # 4. Process results grouped by 'image_type'
+    img_type_output_dict = {}
+    if 'image_type' not in results_df.columns:
+        eval_logger.warning("'image_type' column not found in results. Skipping 'by_img_type' aggregation.")
+        output['by_img_type'] = {}
+    else:
+        for img_type, img_type_df in results_df.groupby('image_type'):
+            current_img_type_scores = {} 
+            task_counts_for_img_type = img_type_df.groupby('task').size()
+
+            # 4a. Populate current_img_type_scores with per-task average scores for this img_type
+            for task_name_iter, per_task_df_img in img_type_df.groupby('task'):
+                if task_name_iter in MCA_QUESTION_TYPES:
+                    for metric_name in METRICS_FOR_MCA.keys():
+                        current_img_type_scores[f"{task_name_iter}_{metric_name}"] = per_task_df_img[metric_name].mean()
+                elif task_name_iter in NA_QUESTION_TYPES:
+                    for metric_name in METRICS_FOR_NA.keys():
+                        current_img_type_scores[f"{task_name_iter}_{metric_name}"] = per_task_df_img[metric_name].mean()
+                elif task_name_iter in SPECIAL_QUESTION_TYPES:
+                    if task_name_iter == "view_change_infer" and "vci_metric" in per_task_df_img.columns:
+                        current_img_type_scores[f"{task_name_iter}_vci_metric"] = per_task_df_img["vci_metric"].mean()
+                    elif task_name_iter == "view_change_infer": # Handle missing column case
+                        current_img_type_scores[f"{task_name_iter}_vci_metric"] = np.nan
+                        eval_logger.warning(f"Metric column 'vci_metric' not found for task '{task_name_iter}' in image_type '{img_type}'. Setting to NaN.")
+
+
+            # 4b. Calculate WEIGHTED 'overall_accuracy' for current_img_type_scores
+            weighted_sum_img_type_accuracy = 0.0
+            total_weight_for_img_type_accuracy = 0.0
+            for metric_key, avg_task_score in current_img_type_scores.items():
+                if pd.isna(avg_task_score): continue
+                base_task_name = get_task_name_from_key(metric_key)
+                if base_task_name and base_task_name in task_counts_for_img_type:
+                    task_weight = task_counts_for_img_type[base_task_name]
+                    weighted_sum_img_type_accuracy += avg_task_score * task_weight
+                    total_weight_for_img_type_accuracy += task_weight
                 else:
-                    overall_output[f"{question_type}_{metric}"] = per_question_type[metric].mean()
-        elif question_type in SPECIAL_QUESTION_TYPES:
-            if question_type == "view_change_infer":
-                overall_output[f"{question_type}_vci_metric"] = per_question_type["vci_metric"].mean()
+                     eval_logger.warning(f"Could not find task_name or count for metric_key '{metric_key}' during img_type overall_accuracy. Base task: '{base_task_name}'")
 
-    overall_output['overall_accuracy'] = sum([_ for _ in overall_output.values()]) / len(overall_output)
+            if total_weight_for_img_type_accuracy > 0:
+                current_img_type_scores['overall_accuracy'] = weighted_sum_img_type_accuracy / total_weight_for_img_type_accuracy
+            else:
+                current_img_type_scores['overall_accuracy'] = np.nan
+
+            # 4c. Calculate WEIGHTED Low, Middle, High for current_img_type_scores
+            img_type_category_scores = {}
+            for cat_name, tasks_in_category in categories.items():
+                weighted_sum_img_cat = 0.0
+                total_weight_for_img_cat = 0.0
+                for metric_key, avg_task_score in current_img_type_scores.items():
+                    if metric_key == 'overall_accuracy': continue
+                    if pd.isna(avg_task_score): continue
+                    base_task_name = get_task_name_from_key(metric_key)
+                    if base_task_name and base_task_name in task_counts_for_img_type and base_task_name in tasks_in_category:
+                        task_weight = task_counts_for_img_type[base_task_name]
+                        weighted_sum_img_cat += avg_task_score * task_weight
+                        total_weight_for_img_cat += task_weight
+                
+                if total_weight_for_img_cat > 0:
+                    img_type_category_scores[cat_name] = weighted_sum_img_cat / total_weight_for_img_cat
+                else:
+                    img_type_category_scores[cat_name] = np.nan
+            
+            img_type_output_dict[img_type] = {**img_type_category_scores, **current_img_type_scores}
+        output['by_img_type'] = img_type_output_dict
     
+    def nan_to_null_serializer(obj):
+        if isinstance(obj, float) and np.isnan(obj):
+            return None
+        if isinstance(obj, np.generic): # Handles numpy float types
+             if np.isnan(obj):
+                 return None
+             return obj.item() 
+        return obj
 
-    img_type_output = {}
-    for img_type, img_type_group in results.groupby('image_type'):
-        img_type_output[img_type] = {}
-        
- 
-        img_type_group = img_type_group.reset_index(drop=True)
-        
-        for question_type, question_type_indexes in img_type_group.groupby('task').groups.items():
-            per_question_type = img_type_group.iloc[question_type_indexes]
-
-            if question_type in MCA_QUESTION_TYPES:
-                for metric in METRICS_FOR_MCA.keys():
-                    img_type_output[img_type][f"{question_type}_{metric}"] = per_question_type[metric].mean()
-            elif question_type in NA_QUESTION_TYPES:
-                for metric in METRICS_FOR_NA.keys():
-                    if metric == 'success_rate':
-                        img_type_output[img_type][f"{question_type}_{metric}"] = per_question_type[metric].mean()
-                    else:
-                        img_type_output[img_type][f"{question_type}_{metric}"] = per_question_type[metric].mean()
-            elif question_type in SPECIAL_QUESTION_TYPES:
-                if question_type == "view_change_infer":
-                    img_type_output[img_type]["{question_type}_vci_metric"] = per_question_type["vci_metric"].mean()
-
-   
-        img_type_output[img_type]['overall_accuracy'] = sum([_ for _ in img_type_output[img_type].values()]) / len(img_type_output[img_type])
-
-
-    output['overall'] = overall_output
-    output['by_img_type'] = img_type_output
-
-
-    low_list = []
-    middle_list = []
-    high_list = []
-    for task in overall_output:
-        if task == 'overall_accuracy':
-            continue
-        task_name = "_".join(task.split("_")[:-1])
-        if task_name in Low:
-            low_list.append(overall_output[task])
-        elif task_name in Middle:
-            middle_list.append(overall_output[task])
-        elif task_name in High:
-            high_list.append(overall_output[task])
-
-    output['overall']['Low'] = np.mean(low_list)
-    output['overall']['Middle'] = np.mean(middle_list)
-    output['overall']['High'] = np.mean(high_list)
-
-
-    for img_type in img_type_output:
-        low_list = []
-        middle_list = []
-        high_list = []
-        for task in img_type_output[img_type]:
-            if task == 'overall_accuracy':
-                continue
-            task_name = "_".join(task.split("_")[:-1])
-            if task_name in Low:
-                low_list.append(img_type_output[img_type][task])
-            elif task_name in Middle:
-                middle_list.append(img_type_output[img_type][task])
-            elif task_name in High:
-                high_list.append(img_type_output[img_type][task])
-
-        img_type_output[img_type]['Low'] = np.mean(low_list)
-        img_type_output[img_type]['Middle'] = np.mean(middle_list)
-        img_type_output[img_type]['High'] = np.mean(high_list)
-
-    eval_logger.info(f"Evaluation results: {output}")
+    eval_logger.info(f"Weighted Evaluation results: {json.dumps(output, indent=2, default=nan_to_null_serializer)}")
     return output
