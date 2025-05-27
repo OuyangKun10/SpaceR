@@ -37,7 +37,7 @@ def vsibench_aggregate_results(results):
         ]) / 3.
     except:
         output['object_rel_direction_accuracy'] =0
-    output['overall_accuracy'] = sum([_ for _ in output.values()]) / len(output) 
+    output['overall_accuracy'] = (results_df["MRA:.5:.95:.05"].sum()+results_df["accuracy"].sum())/len(results_df)
     eval_logger.info(f"Evaluation results: {output}")
     return output 
 
