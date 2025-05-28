@@ -1,7 +1,7 @@
 
 # <div style="text-align: center;"><img src="./figure/SpaceR.png" width="60" height="60" /> </div>
 # SpaceR: Reinforcing MLLMs in Video Spatial Reasoning  
-[📖 Paper](https://github.com/OuyangKun10/SpaceR/blob/main/SpaceR_Preprint.pdf) [🤗 SpaceR](https://huggingface.co/RUBBISHLIKE/SpaceR) [📊 SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k)
+[📖 Paper](https://arxiv.org/abs/2504.01805v2) [🤗 SpaceR](https://huggingface.co/RUBBISHLIKE/SpaceR) [📊 SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k)
 
 
 📅 News
@@ -14,7 +14,7 @@
 
 🚀 [04/10/2025] We update the training framework of SpaceR.
 
-🚀 [04/02/2025] We share the paper SpaceR on arxiv.
+🚀 [04/02/2025] We share the paper SpaceR on [arxiv](https://arxiv.org/abs/2504.01805v2).
 
 🚀 [03/31/2025] We release evluation and training code.
 
