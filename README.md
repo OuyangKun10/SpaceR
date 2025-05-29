@@ -6,6 +6,8 @@
 
 📅 News
 
+🚀 [05/29/2025] Our SpaceR achieves 35.2% accuracy on the new video reasoning benchmark [Video-Holmes](https://github.com/TencentARC/Video-Holmes), beating the commercial model o4-mini (29.9%) and Gemini-2.0-Flash (30.6%).
+
 🚀 [05/19/2025] We release [SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k) dataset.
 
 🚀 [05/10/2025] We release [SpaceR](https://huggingface.co/RUBBISHLIKE/SpaceR) checkpoint.
