@@ -6,6 +6,8 @@
 
 📅 News
 
+🚀 [06/04/2025] Our SpaceR model achieves 37.28% accuracy on [VGBench](https://huggingface.co/datasets/haoningwu/SpatialScore) and 53.72% accuracy on [SpatialScore](https://huggingface.co/datasets/haoningwu/SpatialScore), representing the state-of-the-art performance among all 7B/8B models to date.
+
 🚀 [05/29/2025] Our SpaceR achieves 35.2% accuracy on the new video reasoning benchmark [Video-Holmes](https://github.com/TencentARC/Video-Holmes), beating the commercial model o4-mini (29.9%) and Gemini-2.0-Flash (30.6%).
 
 🚀 [05/19/2025] We release [SpaceR-151k](https://huggingface.co/datasets/RUBBISHLIKE/SpaceR-151k) dataset.
