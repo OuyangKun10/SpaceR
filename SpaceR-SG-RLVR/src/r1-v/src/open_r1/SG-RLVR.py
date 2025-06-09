@@ -288,7 +288,7 @@ def main(script_args, training_args, model_args):
         return map_data
     
     global MAP_DATA
-    MAP_DATA=load_map("annotation/cognitive_map.jsonl")
+    MAP_DATA=load_map("annotation/map.jsonl")
     EXAMPLE_MAP={"table":[[0,3],[5,7]],"chair":[[9,3]],"window":[[6,5]]}
     QUESTION_TEMPLATE = (
         "Question: {Question}\n"
