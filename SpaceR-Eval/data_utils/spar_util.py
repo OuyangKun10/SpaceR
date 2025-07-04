@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import re
 import math
-
+import json
 MCA_QUESTION_TYPES = [
     "obj_spatial_relation_oo",
     "obj_spatial_relation_oc_mv",

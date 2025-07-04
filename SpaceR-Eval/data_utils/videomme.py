@@ -2,11 +2,12 @@ from util import *
 import time
 from accelerate import Accelerator
 from qwen_vl_utils import process_vision_info
-from transformers import Qwen2_5_VLForConditionalGeneration, Qwen2VLForConditionalGeneration, AutoProcessor
+from transformers import Qwen2_5_VLForConditionalGeneration, Qwen2VLForConditionalGeneration, AutoProcessor, AutoModelForCausalLM, AutoModel, AutoTokenizer
 import numpy as np
 from tqdm import tqdm
 from loguru import logger as eval_logger
-
+import json
+from .internvl_video_utils import load_video_internvl2_5 
 QUESTION_TEMPLATE = (
     "Question: {Question}\n"
     "Please think about this question as if you were a human pondering deeply. "
@@ -57,25 +58,56 @@ def evaluate_videomme(rank, world_size, parquet_file, video_dir, model_name, out
         df_shard = df
     logger.info(f"Rank {rank} Shard size: {len(df_shard)}")
 
-    processor = AutoProcessor.from_pretrained(model_name, use_fast=True)
-    processor.tokenizer.padding_side = 'left'
-
+    if 'Qwen2.5' in model_name:
+        processor = AutoProcessor.from_pretrained(model_name, use_fast=True)
+        processor.tokenizer.padding_side = 'left'
+    elif 'Kimi-VL' in model_name:
+        processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
+    elif 'InternVL2_5' in model_name:
+        processor = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_fast=False)
+    elif 'MiniCPM-V' in model_name:
+        processor = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
     if world_size == 1 and len(gpu_ids.split(',')) > 1:
-        model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            model_name,
-            torch_dtype=torch.bfloat16,
-            attn_implementation="flash_attention_2",
-            device_map="auto",
-        )
+        if 'Qwen2.5' in model_name:
+            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                model_name,
+                torch_dtype=torch.bfloat16,
+                attn_implementation="flash_attention_2",
+                device_map="auto",
+                trust_remote_code=True,
+            )
+        elif 'Kimi-VL' in model_name:
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                torch_dtype=torch.bfloat16,
+                attn_implementation="flash_attention_2",
+                device_map="auto",
+                trust_remote_code=True,
+            )
+        elif 'InternVL2_5' in model_name:
+            model = AutoModel.from_pretrained(
+                    model_name,
+                    torch_dtype=torch.bfloat16,
+                    low_cpu_mem_usage=True,
+                    device_map="auto",
+                    use_flash_attn=True,
+                    trust_remote_code=True)
+        elif 'MiniCPM-V' in model_name:
+            model = AutoModel.from_pretrained(model_name, trust_remote_code=True, device_map="auto",
+                attn_implementation='flash_attention_2', torch_dtype=torch.bfloat16)
         model = accelerator.prepare(model)
         model.eval()
     else:
-        model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            model_name,
-            torch_dtype=torch.bfloat16,
-            attn_implementation="flash_attention_2"
-        ).eval().to(device)
+        if 'Qwen2.5' in model_name:
+            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2").eval().to(device)
+        elif 'Kimi-VL' in model_name:
+            model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
+        elif 'InternVL2_5' in model_name:
+            model = AutoModel.from_pretrained(model_name, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, use_flash_attn=True,trust_remote_code=True).eval().to(device)
+        elif 'MiniCPM-V' in model_name:
+            model = AutoModel.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
         model = accelerator.prepare(model)
+
 
     results = []
     total_samples = len(df_shard)
@@ -91,7 +123,11 @@ def evaluate_videomme(rank, world_size, parquet_file, video_dir, model_name, out
         batch_messages_list = []
         batch_row_infos = []
         prompt_list = []
-
+        predicted_answers_batch=[]
+        if prompt_type=="default":
+            max_new_token=128
+        else:
+            max_new_token=1024
         for _, row in batch_df.iterrows():
             video_path = os.path.join(video_dir, f"{row['videoID']}.mp4")
             if not os.path.exists(video_path):
@@ -107,7 +143,35 @@ def evaluate_videomme(rank, world_size, parquet_file, video_dir, model_name, out
             prompt_text = prompt_template["pre_prompt"].format(Question=question)
             prompt_text += "\n" + prompt_template["mca_post_prompt"]
             prompt_list.append(prompt_text)
-
+            if 'InternVL2_5' in model_name:
+                pixel_values, num_patches_list = load_video_internvl2_5(video_path, num_segments=num_frames)
+                pixel_values = pixel_values.to(torch.bfloat16).to(device)
+                video_prefix = ''.join([f'Frame{i+1}: <image>\\n' for i in range(len(num_patches_list))])
+                prompt_text = video_prefix + prompt_text
+                response, _ = model.chat(
+                    processor, pixel_values, prompt_text,
+                    generation_config={"max_new_tokens": max_new_token, "do_sample": False},
+                    num_patches_list=num_patches_list,
+                    history=None,
+                    return_history=True
+                )
+                predicted_answers_batch.append(response)
+            elif 'MiniCPM-V' in model_name:
+                msgs = [
+                            {'role': 'user', 'content': frames + [prompt_text]}, 
+                        ]
+                params={}
+                params["use_image_id"] = False
+                params["max_slice_nums"] = 2
+                params["max_new_tokens"]=max_new_token
+                params["temperature"]=0.01
+                response=model.chat(
+                    image=None,
+                    msgs=msgs,
+                    tokenizer=processor,
+                    **params
+                )
+                predicted_answers_batch.append(response)
             messages = [
                 {
                     "role": "user",
@@ -120,34 +184,35 @@ def evaluate_videomme(rank, world_size, parquet_file, video_dir, model_name, out
             batch_messages_list.append(messages)
             batch_row_infos.append(row)
 
-        if not batch_messages_list:
-            continue
 
-        texts = [
-            processor.apply_chat_template(msg, tokenize=False, add_generation_prompt=True)
-            for msg in batch_messages_list
-        ]
-        image_inputs_batch, video_inputs_batch = process_vision_info(batch_messages_list)
-        inputs_batch = processor(
-            text=texts,
-            images=image_inputs_batch,
-            videos=video_inputs_batch,
-            padding=True,
-            return_tensors="pt",
-        ).to(device)
-
-        try:
-            max_new_token = 128 if prompt_type == "default" else 1024
-            generated_ids_batch = model.generate(**inputs_batch, use_cache=True, max_new_tokens=max_new_token, temperature=0.01)
-            generated_ids_trimmed_batch = [
-                out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs_batch.input_ids, generated_ids_batch)
+        if 'Qwen2.5' in model_name or 'Kimi-VL' in model_name:
+            if not batch_messages_list:
+                continue
+            texts = [
+                processor.apply_chat_template(msg, tokenize=False, add_generation_prompt=True)
+                for msg in batch_messages_list
             ]
-            predicted_answers_batch = processor.batch_decode(
-                generated_ids_trimmed_batch, skip_special_tokens=True, clean_up_tokenization_spaces=False
-            )
-        except Exception as e:
-            logger.error(f"Process {rank} batch inference failed: {e}")
-            predicted_answers_batch = [""] * len(batch_messages_list)
+            image_inputs_batch, video_inputs_batch = process_vision_info(batch_messages_list)
+            inputs_batch = processor(
+                text=texts,
+                images=image_inputs_batch,
+                videos=video_inputs_batch,
+                padding=True,
+                return_tensors="pt",
+            ).to(device)
+
+            try:
+                
+                generated_ids_batch = model.generate(**inputs_batch, use_cache=True, max_new_tokens=max_new_token, temperature=0.01)
+                generated_ids_trimmed_batch = [
+                    out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs_batch.input_ids, generated_ids_batch)
+                ]
+                predicted_answers_batch = processor.batch_decode(
+                    generated_ids_trimmed_batch, skip_special_tokens=True, clean_up_tokenization_spaces=False
+                )
+            except Exception as e:
+                logger.error(f"Process {rank} batch inference failed: {e}")
+                predicted_answers_batch = [""] * len(batch_messages_list)
 
         for i, predicted_answer in enumerate(predicted_answers_batch):
             row = batch_row_infos[i]
