@@ -87,7 +87,7 @@ if __name__ == "__main__":
     # Base directory for storing evaluation results
     output_dir_base = "/res/Qwen2.5-VL-7B-Instruct"
     # Path of the model being evaluated
-    model_name="Qwen/Qwen2.5-VL-7B-Instruct"
+    model_name="Qwen/Qwen2.5-VL-7B-Instruct"# YOUR_MODEL_PATH supporting Qwen2.5vl Kimivl Intern2.5vl MiniCPM-V 
    
     # Create a timestamped directory for this specific run's outputs
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     log_output_file = os.path.join(output_dir, f"{EVAL_TASK}_eval.log")
 
     # Type of prompt to use for the model (e.g., "thinking", "default")
-    SELECTED_PROMPT_TYPE = "thinking"
+    SELECTED_PROMPT_TYPE = "default"
 
     # GPU and multiprocessing configuration
     gpu_ids = "0,1,2,3" # Comma-separated string of GPU IDs to use
