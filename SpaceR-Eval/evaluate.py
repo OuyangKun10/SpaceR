@@ -17,7 +17,7 @@ from data_utils.sparbench import evaluate_sparbench,sparbench_eval
 from data_utils.videomme import evaluate_videomme,videomme_eval
 from data_utils.longvideobench import evaluate_longvideobench,longvideobench_eval
 from data_utils.tempcompass import evaluate_tempcompass,tempcompass_eval
-
+from data_utils.videoholmes import evaluate_videoholmes,videoholmes_eval
 
 def merge_results(world_size: int, output_file: str, task: str):
     """
@@ -52,6 +52,7 @@ def prepare_data(task: str) -> tuple[str | list[str], str]:
             - The path to the data file (or a list of paths for SPAR-Bench).
             - The path to the directory containing video files.
     """
+    #FIXME
     if task =='VSI-Bench':
         return "VSI_bench/test-00000-of-00001.parquet", "VSI_bench"
     elif task =="STI-Bench":
@@ -64,11 +65,13 @@ def prepare_data(task: str) -> tuple[str | list[str], str]:
         return 'LongVideoBench/lvb_val.json', 'LongVideoBench/videos'
     elif task=='TempCompass':
         return "TempCompass/eval_tempcompass.json", "TempCompass/videos"
+    elif task=='Video-Holmes':
+        return "Video-Holmes/test_Video-Holmes.json", "Video-Holmes/videos"
     else:
         raise ValueError(f"Task {task} not recognized for data preparation.")
 
 # List of supported evaluation benchmark tasks
-SUPPORTED_TASK=['VSI-Bench',"STI-Bench",'SPAR-Bench','Video-MME','LongVideoBench','TempCompass']
+SUPPORTED_TASK=['VSI-Bench',"STI-Bench",'SPAR-Bench','Video-MME','LongVideoBench','TempCompass','Video-Holmes']
 
 if __name__ == "__main__":
     # Set the multiprocessing start method to 'spawn'.
@@ -87,7 +90,7 @@ if __name__ == "__main__":
     # Base directory for storing evaluation results
     output_dir_base = "/res/Qwen2.5-VL-7B-Instruct"
     # Path of the model being evaluated
-    model_name="Qwen/Qwen2.5-VL-7B-Instruct"# YOUR_MODEL_PATH supporting Qwen2.5vl Kimivl Intern2.5vl MiniCPM-V 
+    model_name="Qwen/Qwen2.5-VL-7B-Instruct"# YOUR_MODEL_PATH supporting Qwen2.5vl Kimivl Internvl MiniCPM-V VideoLLaMA3
    
     # Create a timestamped directory for this specific run's outputs
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -163,6 +166,8 @@ if __name__ == "__main__":
                 results = pool.starmap(evaluate_longvideobench, args_list)
             elif EVAL_TASK == 'TempCompass':
                 results = pool.starmap(evaluate_tempcompass, args_list)
+            elif EVAL_TASK=='Video-Holmes':
+                results = pool.starmap(evaluate_videoholmes, args_list)
             else:
                 main_logger.error(f"Task '{EVAL_TASK}' not recognized for multiprocessing dispatch.")
                 exit()
@@ -192,6 +197,8 @@ if __name__ == "__main__":
             process_output_file, elapsed_time_process = evaluate_longvideobench(*common_args)
         elif EVAL_TASK == 'TempCompass':
             process_output_file, elapsed_time_process = evaluate_tempcompass(*common_args)
+        elif EVAL_TASK=='Video-Holmes':
+            process_output_file, elapsed_time_process = evaluate_videoholmes(*common_args)
         else:
             main_logger.error(f"Task '{EVAL_TASK}' not recognized for single process dispatch.")
             exit()
@@ -271,6 +278,11 @@ if __name__ == "__main__":
         evaluation_results = tempcompass_eval(output_jsonl_file, SELECTED_PROMPT_TYPE)
         print("TempCompass Evaluation Results:", evaluation_results)
         log_str = f"TempCompass Evaluation Complete. Results file: {output_jsonl_file}\n"
+        log_str += f"Overall Accuracy: {evaluation_results.get('overall_accuracy', 0.0) * 100.:.2f}%\n"
+    elif EVAL_TASK=='Video-Holmes':
+        evaluation_results = videoholmes_eval(output_jsonl_file, SELECTED_PROMPT_TYPE)
+        print("Video-Holmes Evaluation Results:", evaluation_results)
+        log_str = f"Video-Holmes Evaluation Complete. Results file: {output_jsonl_file}\n"
         log_str += f"Overall Accuracy: {evaluation_results.get('overall_accuracy', 0.0) * 100.:.2f}%\n"
     else:
         log_str = f"No specific final scoring implemented for task: {EVAL_TASK} in this script."
