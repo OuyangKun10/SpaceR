@@ -306,6 +306,7 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
                     image_path=f"{tmp_path}/{row['id']}_{str(idx)}"
                     image_path=save_image(img,image_path)
                     content.append({"type": "image","image": {"image_path":image_path}})
+                content.append({"type": "text","text": prompt_text})
                 conversation = [
                                 {
                                     "role": "user",
