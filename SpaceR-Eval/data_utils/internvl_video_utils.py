@@ -82,7 +82,7 @@ def load_image(image_byte, input_size=448, max_num=12):
     pixel_values = [transform(image) for image in images]
     pixel_values = torch.stack(pixel_values)
     return pixel_values
-def load_video_internvl2_5(video_path, bound=None, input_size=448, max_num=1, num_segments=8):
+def load_video_internvl(video_path, bound=None, input_size=448, max_num=1, num_segments=8):
     vr = VideoReader(video_path, ctx=cpu(0), num_threads=1)
     max_frame = len(vr) - 1
     fps = float(vr.get_avg_fps())
