@@ -238,9 +238,10 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
                     cur_pixel=load_image(row['image'][i]['bytes'], max_num=12).to(torch.bfloat16).cuda()
                     if i>=1:
                         pixel_values = torch.cat((pre_pixel, cur_pixel), dim=0)
+                        pre_pixel=pixel_values
                     else:
                         pixel_values=cur_pixel
-                    pre_pixel=cur_pixel
+                        pre_pixel=cur_pixel
                     num_patches_list.append(cur_pixel.size(0))
                 video_prefix = ''.join([f'<image>\n' for i in range(len(num_patches_list))])
                 prompt_text = video_prefix + prompt_text
