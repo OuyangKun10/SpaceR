@@ -6,6 +6,8 @@
 
 📅 News
 
+🚀 [07/06/2025] [SpaceR-Eval](https://github.com/OuyangKun10/SpaceR/tree/main/SpaceR-Eval) now supports more models (e.g., Qwen2.5VL, InternVL, KimiVL, MiniCPM-V, VideoLLaMA3) and benchmarks (e.g., VSI-Bench, STI-Bench, SPAR-Bench, Video-MME, LongVideoBench, TempCompass, Video-Holmes). [SpatialScore](https://github.com/haoningwu3639/SpatialScore/blob/master/test_qwen.py) also supports SpaceR evaluation.
+
 🚀 [06/04/2025] Our SpaceR model achieves 37.28% accuracy on [VGBench](https://huggingface.co/datasets/haoningwu/SpatialScore) and 53.72% accuracy on [SpatialScore](https://huggingface.co/datasets/haoningwu/SpatialScore), representing the state-of-the-art performance among all 7B/8B models to date.
 
 🚀 [05/29/2025] Our SpaceR achieves 35.2% accuracy on the new video reasoning benchmark [Video-Holmes](https://github.com/TencentARC/Video-Holmes), beating the commercial model o4-mini (29.9%) and Gemini-2.0-Flash (30.6%).
