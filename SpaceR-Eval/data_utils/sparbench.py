@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 import base64
 from .spar_util import sparbench_process_results,sparbench_aggregate_results
-from .internvl_video_utils import load_video_internvl2_5, load_image 
+from .internvl_video_utils import load_video_internvl, load_image 
 
 MCA_QUESTION_TYPES = [
     "obj_spatial_relation_oo",
@@ -135,7 +135,9 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
         processor.tokenizer.padding_side = 'left'
     elif 'Kimi-VL' in model_name:
         processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
-    elif 'InternVL2_5' in model_name:
+    elif 'VideoLLaMA3' in model_name:
+        processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
+    elif 'InternVL' in model_name:
         processor = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_fast=False)
     elif 'MiniCPM-V' in model_name:
         processor = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
@@ -148,6 +150,13 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
                 device_map="auto",
                 trust_remote_code=True,
             )
+        elif 'VideoLLaMA3' in model_name:
+            processor = AutoProcessor.from_pretrained(
+                model_name,
+                torch_dtype=torch.bfloat16,
+                attn_implementation="flash_attention_2",
+                device_map="auto",
+                trust_remote_code=True,)
         elif 'Kimi-VL' in model_name:
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
@@ -156,7 +165,7 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
                 device_map="auto",
                 trust_remote_code=True,
             )
-        elif 'InternVL2_5' in model_name:
+        elif 'InternVL' in model_name:
             model = AutoModel.from_pretrained(
                     model_name,
                     torch_dtype=torch.bfloat16,
@@ -174,7 +183,9 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
             model = Qwen2_5_VLForConditionalGeneration.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2").eval().to(device)
         elif 'Kimi-VL' in model_name:
             model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
-        elif 'InternVL2_5' in model_name:
+        elif 'VideoLLaMA3' in model_name:
+            model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
+        elif 'InternVL' in model_name:
             model = AutoModel.from_pretrained(model_name, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, use_flash_attn=True,trust_remote_code=True).eval().to(device)
         elif 'MiniCPM-V' in model_name:
             model = AutoModel.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
@@ -221,7 +232,7 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
             frames=[]
             for i in range(len(row['image'])):
                 frames.append(row['image'][i]['bytes'])
-            if 'InternVL2_5' in model_name:
+            if 'InternVL' in model_name:
                 num_patches_list=[]
                 for i in range(len(row['image'])):
                     cur_pixel=load_image(row['image'][i]['bytes'], max_num=12).to(torch.bfloat16).cuda()
@@ -233,13 +244,16 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
                     num_patches_list.append(cur_pixel.size(0))
                 video_prefix = ''.join([f'<image>\n' for i in range(len(num_patches_list))])
                 prompt_text = video_prefix + prompt_text
-                response, _ = model.chat(
-                    processor, pixel_values, prompt_text,
-                    generation_config={"max_new_tokens": max_new_token, "do_sample": False},
-                    num_patches_list=num_patches_list,
-                    history=None,
-                    return_history=True
-                )
+                try:
+                    response, _ = model.chat(
+                        processor, pixel_values, prompt_text,
+                        generation_config={"max_new_tokens": max_new_token, "do_sample": False},
+                        num_patches_list=num_patches_list,
+                        history=None,
+                        return_history=True
+                    )
+                except:
+                    response="None"
                 predicted_answers_batch.append(response)
             elif 'MiniCPM-V' in model_name:
                 msgs = [
@@ -256,6 +270,59 @@ def evaluate_sparbench(rank, world_size, parquet_file, video_dir, model_name, ou
                     tokenizer=processor,
                     **params
                 )
+                predicted_answers_batch.append(response)
+            elif 'VideoLLaMA3' in model_name:
+                def save_image(Img_byte, path):
+                    image_formats = {
+                        b'\xff\xd8\xff': 'jpg',  # JPEG
+                        b'\x89PNG\r\n\x1a\n': 'png',  # PNG
+                        b'GIF87a': 'gif',  # GIF
+                        b'GIF89a': 'gif',  # GIF
+                        b'\x00\x00\x01\x00': 'ico',  # ICO
+                        b'\x42\x4d': 'bmp',  # BMP
+                        b'\x49\x49\x2a\x00': 'tiff',  # TIFF
+                        b'\x4d\x4d\x00\x2a': 'tiff',  # TIFF
+                        b'\x52\x49\x46\x46': 'webp',  # WebP
+                    }
+
+                    try:
+                        image_format = None
+                        for header, fmt in image_formats.items():
+                            if Img_byte.startswith(header):
+                                image_format = fmt
+                                break
+                        if image_format is None:
+                            raise ValueError("Unidentified image format")
+                        full_path = f"{path}.{image_format}"
+                        with open(full_path, "wb") as file:
+                            file.write(Img_byte)
+                        print(f"Image successfully saved to {full_path}")
+                        return full_path
+                    except Exception as e:
+                        print(f"Failed to save image: {e}")
+                tmp_path="./tmp"
+                content=[]
+                for idx,img in enumerate(frames):
+                    image_path=f"{tmp_path}/{row['id']}_{str(idx)}"
+                    image_path=save_image(img,image_path)
+                    content.append({"type": "image","image": {"image_path":image_path}})
+                conversation = [
+                                {
+                                    "role": "user",
+                                    "content": content
+                                }
+                            ]
+                inputs = processor(
+                    conversation=conversation,
+                    add_system_prompt=True,
+                    add_generation_prompt=True,
+                    return_tensors="pt"
+                )
+                inputs = {k: v.cuda() if isinstance(v, torch.Tensor) else v for k, v in inputs.items()}
+                if "pixel_values" in inputs:
+                    inputs["pixel_values"] = inputs["pixel_values"].to(torch.bfloat16)
+                output_ids = model.generate(**inputs, max_new_tokens=1024)
+                response = processor.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
                 predicted_answers_batch.append(response)
             prompt_list.append(prompt_text)
             

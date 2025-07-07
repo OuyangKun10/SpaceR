@@ -9,7 +9,7 @@ from tqdm import tqdm
 import copy
 import random
 from .vsi_util import *
-from .internvl_video_utils import load_video_internvl2_5 
+from .internvl_video_utils import load_video_internvl 
 
 def vsibench_aggregate_results(results):
     results_df = pd.DataFrame(results)
@@ -80,7 +80,9 @@ def evaluate_vsibench(rank, world_size, parquet_file, video_dir, model_name, out
         processor.tokenizer.padding_side = 'left'
     elif 'Kimi-VL' in model_name:
         processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
-    elif 'InternVL2_5' in model_name:
+    elif 'VideoLLaMA3' in model_name:
+        processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
+    elif 'InternVL' in model_name:
         processor = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_fast=False)
     elif 'MiniCPM-V' in model_name:
         processor = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
@@ -93,6 +95,13 @@ def evaluate_vsibench(rank, world_size, parquet_file, video_dir, model_name, out
                 device_map="auto",
                 trust_remote_code=True,
             )
+        elif 'VideoLLaMA3' in model_name:
+            processor = AutoProcessor.from_pretrained(
+                model_name,
+                torch_dtype=torch.bfloat16,
+                attn_implementation="flash_attention_2",
+                device_map="auto",
+                trust_remote_code=True,)
         elif 'Kimi-VL' in model_name:
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
@@ -101,7 +110,7 @@ def evaluate_vsibench(rank, world_size, parquet_file, video_dir, model_name, out
                 device_map="auto",
                 trust_remote_code=True,
             )
-        elif 'InternVL2_5' in model_name:
+        elif 'InternVL' in model_name:
             model = AutoModel.from_pretrained(
                     model_name,
                     torch_dtype=torch.bfloat16,
@@ -119,7 +128,9 @@ def evaluate_vsibench(rank, world_size, parquet_file, video_dir, model_name, out
             model = Qwen2_5_VLForConditionalGeneration.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2").eval().to(device)
         elif 'Kimi-VL' in model_name:
             model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
-        elif 'InternVL2_5' in model_name:
+        elif 'VideoLLaMA3' in model_name:
+            model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
+        elif 'InternVL' in model_name:
             model = AutoModel.from_pretrained(model_name, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, use_flash_attn=True,trust_remote_code=True).eval().to(device)
         elif 'MiniCPM-V' in model_name:
             model = AutoModel.from_pretrained(model_name, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2",trust_remote_code=True).eval().to(device)
@@ -173,8 +184,8 @@ def evaluate_vsibench(rank, world_size, parquet_file, video_dir, model_name, out
                     prompt_text += "\n" + prompt_template["mca_post_prompt"]
                 elif row['question_type'] in NA_QUESTION_TYPES:
                     prompt_text += "\n" + prompt_template["na_post_prompt"]
-            if 'InternVL2_5' in model_name:
-                pixel_values, num_patches_list = load_video_internvl2_5(video_path, num_segments=num_frames)
+            if 'InternVL' in model_name:
+                pixel_values, num_patches_list = load_video_internvl(video_path, num_segments=num_frames)
                 pixel_values = pixel_values.to(torch.bfloat16).to(device)
                 video_prefix = ''.join([f'Frame{i+1}: <image>\\n' for i in range(len(num_patches_list))])
                 prompt_text = video_prefix + prompt_text
@@ -202,7 +213,24 @@ def evaluate_vsibench(rank, world_size, parquet_file, video_dir, model_name, out
                     **params
                 )
                 predicted_answers_batch.append(response)
-
+            elif 'VideoLLaMA3' in model_name:
+                conversation = [
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "video", "video": {"video_path": video_path, "fps": 1, "max_frames": num_frames}},
+                            {"type": "text", "text": prompt_text},
+                        ]
+                    },
+                ]
+                inputs = processor(conversation=conversation, return_tensors="pt")
+                inputs = {k: v.cuda() if isinstance(v, torch.Tensor) else v for k, v in inputs.items()}
+                if "pixel_values" in inputs:
+                    inputs["pixel_values"] = inputs["pixel_values"].to(torch.bfloat16)
+                output_ids = model.generate(**inputs, max_new_tokens=max_new_token)
+                response = processor.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
+                predicted_answers_batch.append(response)
             prompt_list.append(prompt_text)
             messages = [
                 {
