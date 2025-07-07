@@ -94,11 +94,11 @@ bash ./src/scripts/run_SpaceR_SG_RLVR.sh
 **Citation:**
 
 ```
-@article{ouyang2025spacerreinforcingmllmsvideo,
-      title={SpaceR: Reinforcing MLLMs in Video Spatial Reasoning}, 
-      author={Kun Ouyang and Yuanxin Liu and Haoning Wu and Yi Liu and Hao Zhou and Jie Zhou and Fandong Meng and Xu Sun},
-      journal={arXiv preprint arXiv:2504.01805},
-      year={2025},
+@article{ouyang2025spacer,
+  title={SpaceR: Reinforcing MLLMs in Video Spatial Reasoning},
+  author={Ouyang, Kun and Liu, Yuanxin and Wu, Haoning and Liu, Yi and Zhou, Hao and Zhou, Jie and Meng, Fandong and Sun, Xu},
+  journal={arXiv preprint arXiv:2504.01805},
+  year={2025}
 }
 ```
 
