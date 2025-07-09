@@ -87,9 +87,9 @@ bash ./src/scripts/run_SpaceR_SG_RLVR.sh
 
 
 **Usage**
-    ```bash
-    python evaluate.py
-    ```
+```bash
+python evaluate.py
+```
 
 **Citation:**
 
